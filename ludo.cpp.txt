@@ -1,0 +1,259 @@
+#include<iostream>
+#include<cstdlib>
+using namespace std;
+void startSnakeGame();
+void delet(int** ptr, int size);
+void snakeboard(int** ptr, int size, int size1);
+void displayboard(int** ptr, int size, int size1, int sum);
+void diceplay(char& p, int& x, int& count, int& sum);
+void snakehead(int& sh1, int& sh2, int& sh3, int& sh4, int& tl1, int& tl2, int& tl3, int& tl4, int& lt1, int& lt2, int& lt3, int& lt4, int& lh1, int& lh2, int& lh3, int& lh4);
+bool end(int sum1, int sum2);
+void snakebite(int sh1, int sh2, int sh3, int sh4, int tl1, int tl2, int tl3, int tl4, int lt1, int lt2, int lt3, int lt4, int lh1, int lh2, int lh3, int lh4, int& sum);
+int main()
+{
+	startSnakeGame();
+}
+void startSnakeGame()
+{
+	srand(time(0));
+	int size = 5;
+	int size1 = 6;
+	int** snake = new int* [size];
+	char p1, p2;
+	int x1, x2;
+	int count1 = 0, count2 = 0;;
+	int sum1 = 0, sum2 = 0;
+	//snake head
+	int sh1 = 0, sh2 = 0, sh3 = 0, sh4 = 0;
+	//snake tail
+	int tl1 = 0, tl2 = 0, tl3 = 0, tl4 = 0;
+	//leader tail 
+	int lt1 = 0, lt2 = 0, lt3 = 0, lt4 = 0;
+	//leader head
+	int lh1 = 0, lh2 = 0, lh3 = 0, lh4 = 0;
+	for (int i = 0; i < size; i++)
+	{
+		snake[i] = new int[size1];
+	}
+	snakeboard(snake, size, size1);
+	snakehead(sh1, sh2, sh3, sh4, tl1, tl2, tl3, tl4, lt1, lt2, lt3, lt4, lh1, lh2, lh3, lh4);
+	bool game;
+	for (int i = 0;; i++)
+	{
+		if (i % 2 == 0)
+		{
+			cout << "PLAYER 1 : " << endl;
+
+			diceplay(p1, x1, count1, sum1);
+			snakebite(sh1, sh2, sh3, sh4, tl1, tl2, tl3, tl4, lt1, lt2, lt3, lt4, lh1, lh2, lh3, lh4, sum1);
+			displayboard(snake, size, size1, sum1);
+			snakeboard(snake, size, size1);
+		}
+		else if (i % 2 == 1)
+		{
+			cout << "PLAYER 2: " << endl;
+			diceplay(p2, x2, count2, sum2);
+			snakebite(sh1, sh2, sh3, sh4, tl1, tl2, tl3, tl4, lt1, lt2, lt3, lt4, lh1, lh2, lh3, lh4, sum2);
+			displayboard(snake, size, size1, sum2);
+			snakeboard(snake, size, size1);
+		}
+		game = end(sum1, sum2);
+		if (game == true) break;
+
+	}
+	delet(snake, size);
+}
+void diceplay(char& p, int& x, int& count, int& sum)
+{
+	int z = 0;
+	for (int i = 0; true; i++)
+	{
+		do
+		{
+			cout << "PRESS P : ";
+			cin >> p;
+			if (p == 'P')
+				break;
+			else if (p != 'P')
+			{
+				cout << "YOU ENTERED AN INVALID INPUT.AGAIN ";
+			}
+		} while (true);
+		x = rand() % 6 + 1;
+		cout << x << endl;
+		if (x == 6)
+		{
+
+			if (count > 1)
+				z += x;
+
+			if (sum + z >= 30) break;
+			cout << "AGAIN ";
+			count++;
+		}
+		else if (x != 6)
+		{
+			z += x;
+			if (sum + z > 30) break;
+			if (count >= 1 && sum + z <= 30)
+				sum += z;
+			cout << sum << endl;
+			break;
+		}
+	}
+}
+void snakeboard(int** ptr, int size, int size1)
+{
+	int sum = 1;
+	for (int i = size - 1; i >= 0; i--)
+	{
+		if (i % 2 == 0)
+		{
+			for (int j = 0; j < size1; j++)
+			{
+				*(*(ptr + i) + j) = sum;
+				sum++;
+			}
+		}
+		else if (i % 2 == 1)
+		{
+			for (int j = size1 - 1; j >= 0; j--)
+			{
+
+				*(*(ptr + i) + j) = sum;
+				sum++;
+			}
+		}
+	}
+}
+void displayboard(int** ptr, int size, int size1, int sum)
+{
+	for (int i = 0; i < size; i++)
+	{
+		cout << "-----------------------------------------------------------------------------------------" << endl;
+		for (int j = 0; j < size1; j++)
+		{
+			if (ptr[i][j] == sum && sum != 0)
+				cout << "x";
+			else
+				cout << *(*(ptr + i) + j);
+			if (ptr[i][j] < 10)
+				cout << " |";
+			else
+				cout << "|";
+
+			cout << "\t";
+		}
+		cout << endl;
+	}
+	cout << "-----------------------------------------------------------------------------------------" << endl;
+}
+void snakehead(int& sh1, int& sh2, int& sh3, int& sh4, int& tl1, int& tl2, int& tl3, int& tl4, int& lt1, int& lt2, int& lt3, int& lt4, int& lh1, int& lh2, int& lh3, int& lh4)
+{
+
+	do
+	{
+		sh1 = rand() % 10 + 15;
+		sh2 = rand() % 5 + 18;
+		sh3 = rand() % 5 + 23;
+		sh4 = rand() % 8 + 21;
+		tl1 = rand() % 10 + 4;
+		tl2 = rand() % 13 + 4;
+		tl3 = rand() % 12 + 4;
+		tl4 = rand() % 8 + 4;
+		lt1 = rand() % 5 + 3;
+		lt2 = rand() % 15 + 5;
+		lt3 = rand() % 15 + 5;
+		lt4 = rand() % 10 + 8;
+		lh1 = rand() % 5 + 16;
+		lh2 = rand() % 5 + 20;
+		lh3 = rand() % 5 + 20;
+		lh4 = rand() % 10 + 15;
+		if (((sh1 != sh2 && sh1 != sh4 && sh1 != sh3) && (sh2 != sh1 && sh2 != sh3 && sh2 != sh4) && (sh3 != sh1 && sh3 != sh2 && sh3 != sh4) && (sh4 != sh1 && sh4 != sh2 && sh4 != sh3))
+			&& ((sh1 != tl1 && sh1 != tl2 && sh1 != tl3 && sh1 != tl4) && (sh2 != tl1 && sh2 != tl2 && sh2 != tl3 && sh2 != tl4) && (sh3 != tl1 && sh3 != tl2 && sh3 != tl3 && sh3 != tl4) && (sh4 != tl1 && sh4 != tl2 && sh4 != tl3 && sh4 != tl4)) &&
+			((tl1 != tl2 && tl1 != tl4 && tl1 != tl3) && (tl2 != tl1 && tl2 != tl3 && tl2 != tl4) && (tl3 != tl1 && tl3 != tl2 && tl3 != tl4) && (tl4 != tl1 && tl4 != tl2 && tl4 != tl3)) &&
+			((lt1 != lt2 && lt1 != lt4 && lt1 != lt3) && (lt2 != lt1 && lt2 != lt3 && lt2 != lt4) && (lt3 != lt1 && lt3 != lt2 && lt3 != lt4) && (lt4 != lt1 && lt4 != lt2 && lt4 != lt3)) &&
+			((sh1 != lt1 && sh1 != lt2 && sh1 != lt3 && sh1 != lt4) && (sh2 != lt1 && sh2 != lt2 && sh2 != lt3 && sh2 != lt4) && (sh3 != lt1 && sh3 != lt2 && sh3 != lt3 && sh3 != lt4) && (sh4 != lt1 && sh4 != lt2 && sh4 != lt3 && sh4 != lt4)) &&
+			((lh1 != lh2 && lh1 != lh4 && lh1 != lh3) && (lh2 != lh1 && lh2 != lh3 && lh2 != lh4) && (lh3 != lh1 && lh3 != lh2 && lh3 != lh4) && (lh4 != lh1 && lh4 != lh2 && lh4 != lh3)) &&
+			((sh1 != lh1 && sh1 != lh2 && sh1 != lh3 && sh1 != lh4) && (sh2 != lh1 && sh2 != lh2 && sh2 != lh3 && sh2 != lh4) && (sh3 != lh1 && sh3 != lh2 && sh3 != lh3 && sh3 != lh4) && (sh4 != lh1 && sh4 != lh2 && sh4 != lh3 && sh4 != lh4)) &&
+			((lt1 != lh1 && lt1 != lh2 && lt1 != lh3 && lt1 != lh4) && (lt2 != lh1 && lt2 != lh2 && lt2 != lh3 && lt2 != lh4) && (lt3 != lh1 && lt3 != lh2 && lt3 != lh3 && lt3 != lh4) && (lt4 != lh1 && lt4 != lh2 && lt4 != lh3 && lt4 != lh4)) &&
+			((tl1 != lt1 && tl1 != lt2 && tl1 != lt3 && tl1 != lt4) && (tl2 != lt1 && tl2 != lt2 && tl2 != lt3 && tl2 != lt4) && (tl3 != lt1 && tl3 != lt2 && tl3 != lt3 && tl3 != lt4) && (tl4 != lt1 && tl4 != lt2 && tl4 != lt3 && tl4 != lt4)))
+			break;
+	} while (true);
+	cout << "sh1 " << sh1 << " sh2 " << sh2 << " sh3 " << sh3 << " sh4 " << sh4 << endl;
+	cout << "tl1 " << tl1 << " tl2 " << tl2 << " tl3 " << tl3 << " tl4 " << tl4 << endl;
+	cout << "lt1 " << lt1 << " lt2 " << lt2 << " lt3 " << lt3 << " lt4 " << lt4 << endl;
+	cout << "lh1 " << lh1 << " lh2 " << lh2 << " lh3 " << lh3 << " lh4 " << lh4 << endl;
+
+}
+
+bool end(int sum1, int sum2)
+{
+	if (sum1 == 30 && sum2 != 30)
+	{
+		cout << "PLAYER 1 WON ";
+		return true;
+	}
+	else if (sum2 == 30 && sum1 != 30)
+	{
+		cout << "PLAYER 2 WON ";
+		return true;
+	}
+	else if (sum2 != 30 && sum1 != 30)
+	{
+		return false;
+	}
+	return 0;
+}
+void snakebite(int sh1, int sh2, int sh3, int sh4, int tl1, int tl2, int tl3, int tl4, int lt1, int lt2, int lt3, int lt4, int lh1, int lh2, int lh3, int lh4, int& sum)
+{
+	if (sum == sh1)
+	{
+		sum -= sh1 - tl1;
+		cout << " YOU WERE BIT BY SNAKE " << endl;
+	}
+	else if (sum == sh2)
+	{
+		sum = sum - (sh2 - tl2);
+		cout << " YOU WERE BIT BY SNAKE " << endl;
+	}
+	else if (sum == sh3)
+	{
+		sum = sum - (sh3 - tl3);
+		cout << " YOU WERE BIT BY SNAKE " << endl;
+	}
+	else if (sum == sh4)
+	{
+		sum = sum - (sh4 - tl4);
+		cout << " YOU WERE BIT BY SNAKE " << endl;
+	}
+	if (sum == lt1)
+	{
+		sum += (lh1 - lt1);
+		cout << "YOU CLIMMBED THE LEDDER" << endl;;
+	}
+	else if (sum == lt2)
+	{
+		sum += (lh2 - lt2);
+		cout << "YOU CLIMMBED THE LEDDER" << endl;;
+	}
+	else if (sum == lt3)
+	{
+		sum += (lh3 - lt3);
+		cout << "YOU CLIMMBED THE LEDDER" << endl;;
+	}
+	else if (sum == lt4)
+	{
+		sum += (lh4 - lt4);
+		cout << "YOU CLIMMBED THE LEDDER" << endl;;
+	}
+}
+void delet(int** snake, int size)
+{
+	for (int i = 0; i < size; i++)
+	{
+		delete[] snake[i];
+	}
+	delete[] snake;
+	snake = nullptr;
+}
